@@ -2,8 +2,11 @@
   (:require [clojure.core.logic :as l]
             [clojure.core.logic.arithmetic :as la]
             [clojure.pprint :refer [pprint]]
-            [toehold.utils :refer [inspect]])
+            [toehold.utils :refer [inspect]]
+            [tupelo.core :as t]
+            )
   (:gen-class))
+(t/refer-tupelo)
 
 (def players #{:x :o})
 
@@ -20,11 +23,21 @@
 (defn occupied? [board x y ]
   (not= ((board x) y) :_))
 
+(defn num_rows [board]
+  (count board))
+(defn num_cols [board]
+  (count (first board)))
+
 ; CHALLENGE 1: Implement this function. See toehold.core-test/available-moves-test
 (defn available-moves [board]
   "Return all empty positions as [x y]"
   ; TODO note that project is unrunnable until this function is implemented
-  )
+  (vec (remove nil?
+         (for [ii (range (num_rows board))
+               jj (range (num_cols board))]
+           (if (occupied? board ii jj)
+             :occupied
+             [ii jj])))))
 
 (defn move [board [x y val]]
   (if (occupied? board x y)
