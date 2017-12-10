@@ -3,10 +3,13 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/core.logic "0.8.10"]
-                 [tupelo "0.9.65"]
-                 [pjstadig/humane-test-output "0.8.0"]]
+  :dependencies [
+     [org.clojure/clojure                 "1.9.0"]
+     [org.clojure/core.logic              "0.8.11"]
+     [pjstadig/humane-test-output         "0.8.3"]
+     [prismatic/schema                    "1.1.7"]
+     [tupelo                              "0.9.67"]
+  ]
   :main ^:skip-aot toehold.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}

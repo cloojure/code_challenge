@@ -4,7 +4,7 @@
             [clojure.pprint :refer [pprint]]
             [toehold.utils :refer [inspect]]
             [tupelo.core :as t]
-            )
+            [schema.core :as s])
   (:gen-class))
 (t/refer-tupelo)
 
@@ -28,11 +28,16 @@
 (defn num_cols [board]
   (count (first board)))
 
+(def all-square-coords
+  (vec (for [ii (range (num_rows empty-board))
+             jj (range (num_cols empty-board))]
+         [ii jj])))
+
 ; CHALLENGE 1: Implement this function. See toehold.core-test/available-moves-test
-(defn available-moves [board]
+(s/defn available-moves  :- #{ [s/Num] }
+  [board]
   "Return all empty positions as [x y]"
-  ; TODO note that project is unrunnable until this function is implemented
-  (vec (remove nil?
+  (set (remove #(= % :occupied)
          (for [ii (range (num_rows board))
                jj (range (num_cols board))]
            (if (occupied? board ii jj)
@@ -96,6 +101,18 @@ we do the same thing but for [2 1 0]."
   "Given a list of moves, return the winning player (or nil if none)"
   [moves]
   (first (keep check-triplet (triplets (board-from moves)))))
+
+(defn winning-player
+  "Given a list of moves, return the winning player :x or :o (nil if no winner).
+  This accepts all 9 moves, and will always return the FIRST winner, even if ambiguous
+  like    x x x
+          o o o
+          x x x "
+  [game-moves]
+  (let [sub-game-moves (reductions conj [] game-moves)
+        winners-list   (filter players (mapv win? sub-game-moves))
+        first-winner   (first winners-list)]
+    first-winner))
 
 (defn full-or-win? [moves]
   (or (full? moves) (win? moves)))
