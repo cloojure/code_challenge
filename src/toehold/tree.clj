@@ -82,8 +82,6 @@
       (let [others (set/difference elems #{root})]
         (t/prepend root (trees-from others))) )))
 
-
-
 ; CHALLENGE 3: Is it possible to rewrite build-tree so that it's significantly
 ; more efficient in time and/or space? If so, what strategies do you see for
 ; that? Implement one.
@@ -94,13 +92,16 @@
 ;   num-o-wins         =    104544 ( 28.8 %)
 ;   num-cats           =     46080 ( 12.7 %)
 
-
 ; CHALLENGE 4: write code to answer some of the following questions:
 ; 1. What percentage of 100000 random games have no win?
 ;   ANSWER:  12.7%
 
 ; 2. Given a partial game in a particular state, which player if any has
 ;   a guaranteed win if they play optimally?
+;   ANSWER:  I have an outline of how I would handle this but I would probably
+;            re-write half of the code here in the process. Would like to make it
+;            more obvious what the steps are with helper functions, type-checking,
+;            bounds checking, etc.
 
 ; 3. Under what conditions is player 2 (O) guaranteed a win?
 ;   ANSWER: Player 2 wins 28.8% of all random games.  Unless we go into a lot of detail, I'd
