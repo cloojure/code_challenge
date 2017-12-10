@@ -6,7 +6,7 @@
             [toehold.core :as c :refer :all]
             [tupelo.core :as t]
             [clojure.set :as set]))
-(t/refer-tupelo)
+; (t/refer-tupelo)
 
 (defrecord node [content children])
 

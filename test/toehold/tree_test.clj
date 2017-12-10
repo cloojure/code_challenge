@@ -10,7 +10,7 @@
     [tupelo.test :as tt]
     [clojure.set :as set])
   (:import [toehold.tree node]))
-(t/refer-tupelo)    ; #todo remove
+; (t/refer-tupelo)    ; #todo remove
 
 (defn v->nodes "Build a simple tree of nodes from a nested vector"
   [vectr]
