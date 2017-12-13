@@ -97,3 +97,12 @@
   [board :- Board]
   (not= :none (winner board)))
 
+(s/defn next-turn
+  "Returns :x or :o to indicate the next player with whos turn it is"
+  [board :- Board]
+  (let [all-squares (tar/array->row-data board)
+        num-x       (count (keep-if #{:x} all-squares))
+        num-o       (count (keep-if #{:o} all-squares))]
+    (if (= num-x num-o)
+      :x
+      :o)))

@@ -54,5 +54,10 @@
                   [:x :_ :o]
                   [:x :x :x]]))
 
-  )
+  (is= :x (next-turn empty-board))
+  (is= :o (next-turn [[:_ :_ :o]
+                      [:x :_ :o]
+                      [:x :_ :x]]))
+
+)
 
