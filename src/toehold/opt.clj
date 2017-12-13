@@ -103,6 +103,18 @@
   (let [all-squares (tar/array->row-data board)
         num-x       (count (keep-if #{:x} all-squares))
         num-o       (count (keep-if #{:o} all-squares))]
-    (if (= num-x num-o)
-      :x
-      :o)))
+    (cond
+      (= num-x num-o) :x
+      (= num-x (inc num-o)) :o
+      :else (throw (IllegalStateException. (str "next-turn: illegal board found! board=" board))))))
+
+(s/defn move :- Board
+  "Record a move by the to the indicated square."
+  [board :- Board
+   move :- tsk/Pair]
+  (let [[irow icol] move
+        mover (next-turn board)]
+    (when-not (unused? board irow icol)
+      (throw (IllegalStateException. (str "move: space occupied! board=" board "   move=" move))))
+    (tar/elem-set board irow icol mover)))
+
