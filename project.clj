@@ -8,7 +8,7 @@
      [org.clojure/core.logic              "0.8.11"]
      [pjstadig/humane-test-output         "0.8.3"]
      [prismatic/schema                    "1.1.7"]
-     [tupelo                              "0.9.67"]
+     [tupelo                              "0.9.68"]
   ]
   :main ^:skip-aot toehold.core
   :target-path "target/%s"

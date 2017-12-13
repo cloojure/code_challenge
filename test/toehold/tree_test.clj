@@ -10,7 +10,6 @@
     [tupelo.test :as tt]
     [clojure.set :as set])
   (:import [toehold.tree node]))
-; (t/refer-tupelo)    ; #todo remove
 
 (defn v->nodes "Build a simple tree of nodes from a nested vector"
   [vectr]
@@ -50,6 +49,25 @@
 (defn percent [numer denom] (* 100.0 (/ numer denom)))
 
 (tt/dotest
+  ; Hiccup-style formatting of trees from #{1 2 3}
+  (tt/is= (trees-from #{1 2 3})
+    [[1
+      [2
+       [3]]
+      [3
+       [2]]]
+     [2
+      [1
+       [3]]
+      [3
+       [1]]]
+     [3
+      [1
+       [2]]
+      [2
+       [1]]]]) )
+
+#_(tt/dotest
   (tt/is= [:x :o :x :o :x] (take 5 player-turns-cycle))
   (tt/is= (append-player-turn all-square-coords)
     [[0 0 :x] [0 1 :o] [0 2 :x] [1 0 :o] [1 1 :x] [1 2 :o] [2 0 :x] [2 1 :o] [2 2 :x]])
@@ -100,26 +118,5 @@
   (println (format "num-cats           = %9d (%5.1f %%)" num-cats
              (percent num-cats total-game-perms)))
 )
-
-(tt/dotest
-  ; Hiccup-style formatting of trees from #{1 2 3}
-  (tt/is= (trees-from #{1 2 3})
-    [[1
-      [2
-       [3]]
-      [3
-       [2]]]
-     [2
-      [1
-       [3]]
-      [3
-       [1]]]
-     [3
-      [1
-       [2]]
-      [2
-       [1]]]])
-
-  )
 
 

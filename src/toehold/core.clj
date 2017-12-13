@@ -64,7 +64,7 @@
     (assert (seq avl-moves) ; Make sure board's not full
             (str "No valid moves left on " board))
     (conj moves
-          (conj (rand-nth avl-moves)
+          (conj (rand-nth (vec avl-moves))
                 (or player (cur-player moves))))))
 
 (defn full? [moves]

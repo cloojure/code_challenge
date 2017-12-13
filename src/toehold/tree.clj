@@ -55,22 +55,6 @@
   [move-coords]
   (map #(t/append %1 %2) move-coords player-turns-cycle))
 
-(defonce all-square-perms
-  ; "A list of all permutations of the square coords => 9! (362,880)"
-  (combo/permutations all-square-coords))
-
-(defonce all-game-perms
-  ; "A list of all game move combinations with :x going first. Includes all 9 moves for each game."
-  (map append-player-turn all-square-perms))
-
-(defonce all-game-perms-winners
-  (map winning-player all-game-perms))
-
-(defonce total-game-perms (count all-game-perms))
-(defonce num-x-wins (count (filter #{:x} all-game-perms-winners)))
-(defonce num-o-wins (count (filter #{:o} all-game-perms-winners)))
-(defonce num-cats   (count (remove #{:o :x} all-game-perms-winners)))
-
 ; Solution #2
 ; You can build up trees of solutions using a function like this, but I'm not sure how it makes
 ; things better.  See unit test of all trees from [1 2 3]
@@ -81,6 +65,26 @@
     (t/forv [root elems]
       (let [others (set/difference elems #{root})]
         (t/prepend root (trees-from others))) )))
+
+(when false
+  (defonce all-square-perms
+    ; "A list of all permutations of the square coords => 9! (362,880)"
+    (combo/permutations all-square-coords))
+
+  (defonce all-game-perms
+    ; "A list of all game move combinations with :x going first. Includes all 9 moves for each game."
+    (map append-player-turn all-square-perms))
+
+  (defonce all-game-perms-winners
+    (map winning-player all-game-perms))
+
+  (defonce total-game-perms (count all-game-perms))
+  (defonce num-x-wins (count (filter #{:x} all-game-perms-winners)))
+  (defonce num-o-wins (count (filter #{:o} all-game-perms-winners)))
+  (defonce num-cats   (count (remove #{:o :x} all-game-perms-winners)))
+)
+
+
 
 ; CHALLENGE 3: Is it possible to rewrite build-tree so that it's significantly
 ; more efficient in time and/or space? If so, what strategies do you see for
