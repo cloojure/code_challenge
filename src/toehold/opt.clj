@@ -79,22 +79,21 @@
 
 (s/defn winner :- Player
   "Returns one of #{ :x :o :none } to indicate the game state. Throws if board has more than one winner. "
-  [board]
+  [board :- Board]
   (let [all-triples (glue
                       (board-rows board)
                       (board-cols board)
                       (board-diags board))
-        >> (spyx-pretty all-triples)
         winners     (drop-if #(= % :none)
-                      (spyx (mapv triple-winner all-triples)))
-        >> (spyx winners)
+                      (mapv triple-winner all-triples))
         num-winners (count winners)]
     (cond
       (< 1 num-winners) (throw (IllegalStateException. (str "winner: too many winners found! board=" board)))
       (= 1 num-winners) (only winners)
-      (zero? num-winners) :none
-      )
+      (zero? num-winners) :none)))
 
-    )
-  )
+(s/defn game-won? :- s/Bool
+  "Returns one of #{ :x :o :none } to indicate the game state. Throws if board has more than one winner. "
+  [board :- Board]
+  (not= :none (winner board)))
 
