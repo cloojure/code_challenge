@@ -46,28 +46,6 @@
    jj :- s/Int]
   (= :_ (tar/elem-get board ii jj)))
 
-; winner Node
-(def node-winner
-  {:board  [[:_ :o :o]
-            [:x :_ :o]
-            [:x :x :x]]
-   :winner :x
-   :kids   {[0 0 :x] :node-next-0
-            [1 1 :x] :node-next-1
-            [2 2 :x] :node-next-2
-            }})
-
-; general Node example
-(def node-general
-  {:board  [[:_ :o :o]
-            [:x :_ :o]
-            [:x :x :_]]
-   :winner :none
-   :kids   {[0 0 :x] :node-next-0
-            [1 1 :x] :node-next-1
-            [2 2 :x] node-winner
-            }})
-
 (s/defn board-rows :- [tsk/Tuple]
   "Returns the rows of the board"
   [board]
@@ -169,4 +147,29 @@
        ]
     result-tree
   ) )
+
+;----------------------------------------------------------------------------------------
+; IDEAS
+;
+;; winner Node
+;(def node-winner
+;  {:board  [[:_ :o :o]
+;            [:x :_ :o]
+;            [:x :x :x]]
+;   :winner :x
+;   :kids   {[0 0 :x] :node-next-0
+;            [1 1 :x] :node-next-1
+;            [2 2 :x] :node-next-2
+;            }})
+;
+;; general Node example
+;(def node-general
+;  {:board  [[:_ :o :o]
+;            [:x :_ :o]
+;            [:x :x :_]]
+;   :winner :none
+;   :kids   {[0 0 :x] :node-next-0
+;            [1 1 :x] :node-next-1
+;            [2 2 :x] node-winner
+;            }})
 

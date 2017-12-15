@@ -86,7 +86,30 @@
                       [:x :_]])
       [[0 0] [1 1]])
 
-    (spyx-pretty (play-out empty-board))
+    (is= (play-out empty-board)
+      {[0 0]
+       {:board  [[:x :_] [:_ :_]],
+        :winner nil,
+        :kids
+                {[0 1]
+                 {:board  [[:x :o] [:_ :_]],
+                  :winner nil,
+                  :kids
+                          {[1 0] {:board [[:x :o] [:x :_]], :winner :x, :kids []},
+                           [1 1] {:board [[:x :o] [:_ :x]], :winner :x, :kids []}}},
+                 [1 0]
+                 {:board  [[:x :_] [:o :_]],
+                  :winner nil,
+                  :kids
+                          {[0 1] {:board [[:x :x] [:o :_]], :winner :x, :kids []},
+                           [1 1] {:board [[:x :_] [:o :x]], :winner :x, :kids []}}},
+                 [1 1]
+                 {:board  [[:x :_] [:_ :o]],
+                  :winner nil,
+                  :kids
+                          {[0 1] {:board [[:x :x] [:_ :o]], :winner :x, :kids []},
+                           [1 0] {:board [[:x :_] [:x :o]], :winner :x, :kids []}}}}}}
+    )
 
   ))
 
