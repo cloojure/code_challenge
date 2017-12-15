@@ -8,16 +8,29 @@
     [schema.core :as s]))
 (t/refer-tupelo)
 
-(def Move tsk/Pair) ; a move like [1 2]
-;(def Board [(s/one tsk/Triple "row1")
-;            (s/one tsk/Triple "row2")
-;            (s/one tsk/Triple "row3")
-;            ] )
-(def Board tsk/TupleList )
+(def is-2x2-testing true)
 
 (def Player (s/enum :x :o :none))
 
-(def init-board-size 3)
+(def Move tsk/Pair) ; a move like [1 2]
+
+(when-not is-2x2-testing
+  (def init-board-size 3)
+  (def Board [(s/one tsk/Triple "row1")
+              (s/one tsk/Triple "row2")
+              (s/one tsk/Triple "row3") ])
+  (def initial-moves-x
+    "Restrict initial moves by X to only the non-symmetric ones."
+    [ [0 0] [0 1] [1 1] ])
+)
+
+(when is-2x2-testing
+  (def Board tsk/TupleList)
+  (def init-board-size 2)
+  (def initial-moves-x
+    "Restrict initial moves by X to only the non-symmetric ones."
+    [ [0 0] ])
+)
 
 (s/def empty-board :- Board
   (tar/create init-board-size init-board-size :_))
@@ -55,17 +68,17 @@
             [2 2 :x] node-winner
             }})
 
-(s/defn board-rows :- [tsk/Triple]
+(s/defn board-rows :- [tsk/Tuple]
   "Returns the rows of the board"
   [board]
   (tar/rows-get board))
 
-(s/defn board-cols :- [tsk/Triple]
+(s/defn board-cols :- [tsk/Tuple]
   "Returns the cols of the board"
   [board]
   (tar/cols-get board))
 
-(s/defn board-diags :- [tsk/Triple]
+(s/defn board-diags :- [tsk/Tuple]
   "Returns the diagonals of the board"
   [board]
   (vector
@@ -77,23 +90,23 @@
                 jj (reverse (board-idxs board))]
       (tar/elem-get board ii jj))))
 
-(s/defn triple-winner :- Player
-  "If a triple has a winner like [:x :x :x] return the winner, else :none"
-  [triple :- tsk/Triple]
+(s/defn line-winner :- Player
+  "If a line has a winner like [:x :x :x] return the winner, else :none"
+  [line :- tsk/Tuple]
   (cond
-    (= [:x :x :x] triple) :x
-    (= [:o :o :o] triple) :o
+    (apply = :x line) :x
+    (apply = :o line) :o
     :else :none))
 
 (s/defn winner :- Player
   "Returns one of #{ :x :o :none } to indicate the game state. Throws if board has more than one winner. "
   [board :- Board]
-  (let [all-triples (glue
+  (let [all-lines (glue
                       (board-rows board)
                       (board-cols board)
                       (board-diags board))
         winners     (drop-if #(= % :none)
-                      (mapv triple-winner all-triples))
+                      (mapv line-winner all-lines))
         num-winners (count winners)]
     (cond
       (< 1 num-winners) (throw (IllegalStateException. (str "winner: too many winners found! board=" board)))
@@ -136,22 +149,24 @@
         (when (unused? board ii jj)
           [ii jj])))) )
 
-(def initial-moves-x
-  "Restrict initial moves by X to only the non-symmetric ones."
-  [ [0 0] [0 1] [1 1] ])
-
-;(defn play-out
-;  "play all possible games given the input board"
-;  [board]
-;  (let [possible-moves (if (= board empty-board)
-;                         initial-moves-x
-;                         (open-moves board))
-;        result-tree    (apply glue
-;                         (forv [move possible-moves]
-;                           (let [board-new (make-move board move) ]
-;                             {move (play-out board-new)}))
-;
-;        ]
-;    )
-;  )
+(defn play-out
+  "play all possible games given the input board"
+  [board]
+  (let [possible-moves (if (= board empty-board)
+                         initial-moves-x
+                         (open-moves board))
+        result-tree    (apply glue
+                         (forv [move possible-moves]
+                           (let [board-new (make-move board move) ]
+                             (if (game-won? board-new)
+                               {move {:board  board-new
+                                      :winner (winner board-new)
+                                      :kids   []}}
+                               {move {:board board-new
+                                      :winner nil
+                                      :kids  (play-out board-new)}}
+                             ))))
+       ]
+    result-tree
+  ) )
 

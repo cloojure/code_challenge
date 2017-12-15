@@ -10,9 +10,15 @@
 (t/refer-tupelo)
 
 (dotest
-  (is= empty-board [[:_ :_ :_]
-                    [:_ :_ :_]
-                    [:_ :_ :_]])
+  (when-not is-2x2-testing
+    (is= empty-board [[:_ :_ :_]
+                      [:_ :_ :_]
+                      [:_ :_ :_]])
+
+    (is= (open-moves empty-board)
+      [[0 0] [0 1] [0 2]
+       [1 0] [1 1] [1 2]
+       [2 0] [2 1] [2 2]]))
 
   (is= :none (winner [[:_ :_ :_]
                       [:x :x :o]
@@ -47,20 +53,15 @@
                   [:x :_ :o]
                   [:x :_ :x]] [0 0]))
 
-  (is= (open-moves empty-board)
-    [[0 0] [0 1] [0 2]
-     [1 0] [1 1] [1 2]
-     [2 0] [2 1] [2 2]])
-
   (is= (open-moves [[:_ :_ :_]
                     [:x :x :o]
                     [:x :x :o]])
-    [[0 0] [0 1] [0 2] ])
+    [[0 0] [0 1] [0 2]])
 
   (is= (open-moves [[:x :_ :o]
                     [:x :_ :o]
                     [:x :_ :o]])
-    [[0 1] [1 1] [2 1] ])
+    [[0 1] [1 1] [2 1]])
 
   (is= (open-moves [[:_ :o :o]
                     [:x :_ :o]
@@ -71,6 +72,21 @@
                     [:x :_ :o]
                     [:x :x :x]])
     [[0 0] [1 1]])
+  )
 
-)
+(dotest
+  ; Test with smaller board
+  (when is-2x2-testing
+    (is= empty-board [[:_ :_]
+                      [:_ :_]])
+    (is= (open-moves empty-board) ; #todo 2x2 testing
+      [[0 0] [0 1]
+       [1 0] [1 1]])
+    (is= (open-moves [[:_ :o]
+                      [:x :_]])
+      [[0 0] [1 1]])
+
+    (spyx-pretty (play-out empty-board))
+
+  ))
 
