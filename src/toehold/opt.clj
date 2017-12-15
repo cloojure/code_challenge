@@ -9,13 +9,22 @@
 (t/refer-tupelo)
 
 (def Move tsk/Pair) ; a move like [1 2]
-(def Board [(s/one tsk/Triple "row1")
-            (s/one tsk/Triple "row2")
-            (s/one tsk/Triple "row3")] )
+;(def Board [(s/one tsk/Triple "row1")
+;            (s/one tsk/Triple "row2")
+;            (s/one tsk/Triple "row3")
+;            ] )
+(def Board tsk/TupleList )
+
 (def Player (s/enum :x :o :none))
 
+(def init-board-size 3)
+
 (s/def empty-board :- Board
-  (tar/create 3 3 :_))
+  (tar/create init-board-size init-board-size :_))
+
+; assumes the board is always square
+(defn board-size [board] (tar/num-rows board))
+(defn board-idxs [board] (range (board-size board)))
 
 (s/defn unused? :- s/Bool
   "Returns true if a board square is unused by :x or :o"
@@ -23,15 +32,6 @@
    ii :- s/Int
    jj :- s/Int]
   (= :_ (tar/elem-get board ii jj)))
-
-(s/defn open-moves  :- [Move]
-  "Returns a list of possible moves given a game-state board"
-  [board :- tar/Array]
-  (keep-if not-nil?
-    (forv [ii (range 3)
-           jj (range 3)]
-      (when (unused? board ii jj)
-        [ii jj]))) )
 
 ; winner Node
 (def node-winner
@@ -59,18 +59,26 @@
   "Returns the rows of the board"
   [board]
   (tar/rows-get board))
+
 (s/defn board-cols :- [tsk/Triple]
   "Returns the cols of the board"
   [board]
   (tar/cols-get board))
-(s/defn board-diags :- [tsk/Triple]
-  "Returns the cols of the board"
-  [board]
-  [(forv [ii (range 3)] (tar/elem-get board ii ii))
-   (forv [ii (range 3)] (tar/elem-get board ii (- 2 ii)))])
 
-(s/defn triple-winner
-  "If a triple has a winner like [:x :x :x] return it, else :none"
+(s/defn board-diags :- [tsk/Triple]
+  "Returns the diagonals of the board"
+  [board]
+  (vector
+    ; main- diag
+    (forv [ii (board-idxs board)]
+      (tar/elem-get board ii ii))
+    ; anti- diag
+    (t/map-let [ii (board-idxs board)
+                jj (reverse (board-idxs board))]
+      (tar/elem-get board ii jj))))
+
+(s/defn triple-winner :- Player
+  "If a triple has a winner like [:x :x :x] return the winner, else :none"
   [triple :- tsk/Triple]
   (cond
     (= [:x :x :x] triple) :x
@@ -108,8 +116,8 @@
       (= num-x (inc num-o)) :o
       :else (throw (IllegalStateException. (str "next-turn: illegal board found! board=" board))))))
 
-(s/defn move :- Board
-  "Record a move by the to the indicated square."
+(s/defn make-move :- Board
+  "Record a move to the indicated square, by the player with the next turn."
   [board :- Board
    move :- tsk/Pair]
   (let [[irow icol] move
@@ -117,4 +125,33 @@
     (when-not (unused? board irow icol)
       (throw (IllegalStateException. (str "move: space occupied! board=" board "   move=" move))))
     (tar/elem-set board irow icol mover)))
+
+(s/defn open-moves  :- [Move]
+  "Returns a list of possible moves given a game-state board"
+  [board :- tar/Array]
+  (keep-if not-nil?
+    (let [idxs (board-idxs board)]
+      (forv [ii idxs
+             jj idxs]
+        (when (unused? board ii jj)
+          [ii jj])))) )
+
+(def initial-moves-x
+  "Restrict initial moves by X to only the non-symmetric ones."
+  [ [0 0] [0 1] [1 1] ])
+
+;(defn play-out
+;  "play all possible games given the input board"
+;  [board]
+;  (let [possible-moves (if (= board empty-board)
+;                         initial-moves-x
+;                         (open-moves board))
+;        result-tree    (apply glue
+;                         (forv [move possible-moves]
+;                           (let [board-new (make-move board move) ]
+;                             {move (play-out board-new)}))
+;
+;        ]
+;    )
+;  )
 
